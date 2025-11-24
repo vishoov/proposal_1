@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal: Premium Headphone Store</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS (for layout utility) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0f1115;
+            --bg-card: #181b21;
+            --accent: #00f2ea; /* Neon Cyan */
+            --accent-glow: rgba(0, 242, 234, 0.3);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --gradient-primary: linear-googleapis(135deg, #00f2ea 0%, #0080ff 100%);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .brand-font {
+            font-family: 'Orbitron', sans-serif; /* Tech feel */
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(24, 27, 33, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(0, 242, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Neon Text Effect */
+        .neon-text {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Navigation Active State */
+        .nav-link.active {
+            color: var(--accent);
+            border-left: 3px solid var(--accent);
+            background: linear-gradient(90deg, rgba(0, 242, 234, 0.1) 0%, transparent 100%);
+        }
+
+        /* Animated 3D Placeholder Cube */
+        .cube-wrapper {
+            perspective: 800px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate 8s infinite linear;
+        }
+        .face {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(0, 242, 234, 0.1);
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        .front  { transform: rotateY(0deg) translateZ(50px); }
+        .back   { transform: rotateY(180deg) translateZ(50px); }
+        .right  { transform: rotateY(90deg) translateZ(50px); }
+        .left   { transform: rotateY(-90deg) translateZ(50px); }
+        .top    { transform: rotateX(90deg) translateZ(50px); }
+        .bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+        @keyframes rotate {
+            from { transform: rotateX(0deg) rotateY(0deg); }
+            to { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* Timeline Styles */
+        .timeline-line {
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #334155;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 24px;
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+            z-index: 10;
+        }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; color: black; }
+            .no-print { display: none; }
+            .glass-card { border: 1px solid #ccc; background: none; color: black; box-shadow: none; }
+            .neon-text { color: #000; text-shadow: none; }
+        }
+
+        /* Reveal Animation on Scroll */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-cyan-500 selection:text-white">
+
+    <!-- Top Banner -->
+    <div class="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-headphones text-cyan-400 text-xl"></i>
+                <span class="brand-font font-bold text-lg tracking-wider">PROPOSAL</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-400 hidden sm:block">Total Investment: <span class="text-cyan-400 font-bold">₹1,00,000</span></span>
+                <button onclick="window.print()" class="bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-2 px-6 rounded-full transition-all text-sm shadow-[0_0_15px_rgba(0,242,234,0.4)]">
+                    <i class="fa-solid fa-print mr-2"></i> Print / Save PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex min-h-screen pt-16">
+        
+        <!-- Sidebar Navigation (Desktop) -->
+        <nav class="hidden lg:block w-64 fixed h-full border-r border-white/5 bg-[#0f1115] pt-8 z-40 no-print">
+            <div class="px-6 mb-8">
+                <p class="text-xs uppercase tracking-widest text-gray-500 font-semibold mb-2">Navigation</p>
+            </div>
+            <ul class="space-y-1">
+                <li><a href="#executive-summary" class="nav-link block px-6 py-3 text-sm text-gray-400 hover:text-white transition-all">Executive Summary</a></li>
+                <li><a href="#scope" class="nav-link block px-6 py-3 text-sm text-gray-400 hover:text-white transition-all">Project Scope</a></li>
+                <li><a href="#3d-visualization" class="nav-link block px-6 py-3 text-sm text-gray-400 hover:text-white transition-all"><i class="fa-solid fa-cube mr-2"></i> 3D Visualization</a></li>
+                <li><a href="#pages" class="nav-link block px-6 py-3 text-sm text-gray-400 hover:text-white transition-all">Page Breakdown</a></li>
+                <li><a href="#technical" class="nav-link block px-6 py-3 text-sm text-gray-400 hover:text-white transition-all">Technical Specs</a></li>
+                <li><a href="#timeline" class="nav-link block px-6 py-3 text-sm text-gray-400 hover:text-white transition-all">Timeline</a></li>
+                <li><a href="#investment" class="nav-link block px-6 py-3 text-sm text-gray-400 hover:text-white transition-all">Investment</a></li>
+                <li><a href="#terms" class="nav-link block px-6 py-3 text-sm text-gray-400 hover:text-white transition-all">Terms & Conditions</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 p-6 lg:p-12 max-w-5xl mx-auto w-full relative">
+            
+            <!-- Hero Header -->
+            <section class="mb-16 mt-8 reveal active">
+                <span class="px-3 py-1 rounded-full border border-cyan-500/30 text-cyan-400 text-xs font-semibold tracking-wider bg-cyan-500/10 mb-4 inline-block">SHOPIFY E-COMMERCE</span>
+                <h1 class="text-4xl lg:text-6xl font-bold mb-4 brand-font leading-tight">
+                    Premium Headphone <br/>
+                    <span class="neon-text">Experience Platform</span>
+                </h1>
+                <p class="text-xl text-gray-400 max-w-2xl">
+                    A proposal to build an immersive, 3D-enabled Shopify store tailored for audiophiles in the Indian market.
+                </p>
+                <div class="mt-8 flex flex-wrap gap-6 text-sm text-gray-400 border-t border-white/10 pt-6">
+                    <div><span class="block text-gray-500 text-xs uppercase">Client</span> [Brand Name]</div>
+                    <div><span class="block text-gray-500 text-xs uppercase">Timeline</span> 20 Days</div>
+                    <div><span class="block text-gray-500 text-xs uppercase">Platform</span> Shopify</div>
+                </div>
+            </section>
+
+            <!-- Executive Summary -->
+            <section id="executive-summary" class="mb-20 reveal">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span class="w-8 h-8 rounded bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-sm">01</span>
+                    Executive Summary
+                </h2>
+                <div class="glass-card p-8 rounded-2xl">
+                    <p class="text-gray-300 leading-relaxed text-lg">
+                        This proposal outlines the development of a premium Shopify-based e-commerce website for your headphones company. The website will feature an <strong class="text-white">interactive 3D homepage logo visualization</strong>, optimized product showcases, seamless payment integration (UPI/NetBanking), and comprehensive SEO optimization to drive conversions and brand engagement in the Indian market.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Scope & Deliverables -->
+            <section id="scope" class="mb-20 reveal">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span class="w-8 h-8 rounded bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-sm">02</span>
+                    Scope & Deliverables
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="glass-card p-6 rounded-xl">
+                        <i class="fa-solid fa-layer-group text-3xl text-cyan-400 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">Structure</h3>
+                        <ul class="text-gray-400 text-sm space-y-2">
+                            <li>• 1 Shopify Store Setup</li>
+                            <li>• 3 Main Pages + Service Pages</li>
+                            <li>• 10+ Products Catalog</li>
+                            <li>• Expandable Collections</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card p-6 rounded-xl">
+                        <i class="fa-solid fa-paintbrush text-3xl text-purple-400 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">Design & Visuals</h3>
+                        <ul class="text-gray-400 text-sm space-y-2">
+                            <li>• 4 Custom Photoshop Banners</li>
+                            <li>• Image Optimization</li>
+                            <li>• 3 Revision Rounds</li>
+                            <li>• Mobile-First Responsive Design</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card p-6 rounded-xl">
+                        <i class="fa-solid fa-rocket text-3xl text-green-400 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">Core Tech</h3>
+                        <ul class="text-gray-400 text-sm space-y-2">
+                            <li>• Domain Connection</li>
+                            <li>• Payment Gateway (Razorpay/PayU)</li>
+                            <li>• SEO Meta Optimization</li>
+                            <li>• 7-Day Post-Delivery Support</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3D Visualization Spotlight -->
+            <section id="3d-visualization" class="mb-20 reveal">
+                <div class="relative rounded-3xl overflow-hidden border border-cyan-500/30 bg-[#0a0a0c]">
+                    <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8 lg:p-12 items-center relative z-10">
+                        <div>
+                            <span class="text-cyan-400 font-bold tracking-wider text-sm mb-2 block">THE CENTERPIECE</span>
+                            <h2 class="text-3xl font-bold mb-4 brand-font text-white">Interactive 3D Experience</h2>
+                            <p class="text-gray-400 mb-6">
+                                We will implement a Three.js or Babylon.js rendered 3D logo directly on the homepage. This creates an immediate "premium tech" impression that static images cannot match.
+                            </p>
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center gap-3 text-sm text-gray-300">
+                                    <i class="fa-solid fa-check text-cyan-400"></i> Rotatable with mouse drag
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-gray-300">
+                                    <i class="fa-solid fa-check text-cyan-400"></i> Zoomable with scroll
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-gray-300">
+                                    <i class="fa-solid fa-check text-cyan-400"></i> Touch-responsive
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-gray-300">
+                                    <i class="fa-solid fa-check text-cyan-400"></i> < 5MB optimization
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- 3D Simulation -->
+                        <div class="h-64 lg:h-80 flex items-center justify-center bg-black/50 rounded-xl border border-white/5 relative">
+                            <div class="absolute top-4 right-4 text-xs text-gray-500 font-mono">DEMO: ROTATING ASSET</div>
+                            <div class="cube-wrapper">
+                                <div class="cube">
+                                    <div class="face front">LOGO</div>
+                                    <div class="face back">LOGO</div>
+                                    <div class="face right">3D</div>
+                                    <div class="face left">3D</div>
+                                    <div class="face top"></div>
+                                    <div class="face bottom"></div>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-4 text-center w-full text-xs text-cyan-500/70 animate-pulse">
+                                Drag to Rotate
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Page Breakdown -->
+            <section id="pages" class="mb-20 reveal">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span class="w-8 h-8 rounded bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-sm">03</span>
+                    Page-by-Page Breakdown
+                </h2>
+
+                <div class="space-y-4">
+                    <!-- Homepage -->
+                    <details class="glass-card rounded-lg group" open>
+                        <summary class="cursor-pointer p-6 font-bold text-lg flex justify-between items-center outline-none">
+                            <span>🏠 Homepage: Immersive Entry</span>
+                            <i class="fa-solid fa-chevron-down text-cyan-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <div class="px-6 pb-6 text-gray-400 border-t border-white/5 pt-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="text-white font-semibold mb-2">Key Sections</h4>
+                                    <ul class="list-disc list-inside space-y-1 text-sm">
+                                        <li>Sticky Nav with Search & Cart</li>
+                                        <li><strong>Hero:</strong> 3D Logo Visualization</li>
+                                        <li>Featured "Curated Favorites" Grid</li>
+                                        <li>"Shop by Category" Interactive Tiles</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-semibold mb-2">Conversion Features</h4>
+                                    <ul class="list-disc list-inside space-y-1 text-sm">
+                                        <li>Testimonial Carousel</li>
+                                        <li>Newsletter Signup</li>
+                                        <li>FAQ Accordion</li>
+                                        <li>Pan-India Shipping USPs</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Product Collection -->
+                    <details class="glass-card rounded-lg group">
+                        <summary class="cursor-pointer p-6 font-bold text-lg flex justify-between items-center outline-none">
+                            <span>🛍️ Collection Page: Smart Filtering</span>
+                            <i class="fa-solid fa-chevron-down text-cyan-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <div class="px-6 pb-6 text-gray-400 border-t border-white/5 pt-4">
+                             <ul class="list-disc list-inside space-y-1 text-sm">
+                                <li><strong>Sidebar Filters:</strong> Price Slider, Category, Features (ANC, Wireless).</li>
+                                <li><strong>Sorting:</strong> Price (Low/High), Best Selling, Newest.</li>
+                                <li><strong>Comparison Tool:</strong> Checkbox to compare 2+ products specs.</li>
+                                <li><strong>Quick View:</strong> Add to cart without leaving the page.</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Product Detail -->
+                    <details class="glass-card rounded-lg group">
+                        <summary class="cursor-pointer p-6 font-bold text-lg flex justify-between items-center outline-none">
+                            <span>🔎 Product Detail: The Closer</span>
+                            <i class="fa-solid fa-chevron-down text-cyan-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <div class="px-6 pb-6 text-gray-400 border-t border-white/5 pt-4">
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="text-white font-semibold mb-2">Visuals</h4>
+                                    <ul class="list-disc list-inside space-y-1 text-sm">
+                                        <li>High-Res Gallery with Zoom</li>
+                                        <li>Color Swatch Selectors</li>
+                                        <li>"In the Box" Checklist Visuals</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-semibold mb-2">Buying Triggers</h4>
+                                    <ul class="list-disc list-inside space-y-1 text-sm">
+                                        <li>EMI Calculator Display</li>
+                                        <li>Stock Urgency ("Only 3 left")</li>
+                                        <li>Estimated Delivery Date</li>
+                                        <li>Detailed Specs Table (Drivers, Battery)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- Technical & SEO -->
+            <section id="technical" class="mb-20 reveal">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span class="w-8 h-8 rounded bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-sm">04</span>
+                    Technical Specifications
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-card p-6 rounded-xl border-l-4 border-l-cyan-500">
+                        <h3 class="text-lg font-bold mb-3">Performance Targets</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Desktop Load</span>
+                                <span class="text-green-400 font-mono">< 3s</span>
+                            </div>
+                            <div class="w-full bg-gray-700 h-1 rounded">
+                                <div class="bg-green-400 h-1 rounded w-[90%]"></div>
+                            </div>
+                            
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Mobile Load</span>
+                                <span class="text-green-400 font-mono">< 4.5s</span>
+                            </div>
+                            <div class="w-full bg-gray-700 h-1 rounded">
+                                <div class="bg-green-400 h-1 rounded w-[80%]"></div>
+                            </div>
+
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Lighthouse Score</span>
+                                <span class="text-green-400 font-mono">85+</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-xl border-l-4 border-l-purple-500">
+                        <h3 class="text-lg font-bold mb-3">Integrations</h3>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            <li class="flex items-center gap-2"><i class="fa-brands fa-google text-gray-400"></i> Google Analytics 4 Setup</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-credit-card text-gray-400"></i> Razorpay / PayU / UPI</li>
+                            <li class="flex items-center gap-2"><i class="fa-brands fa-whatsapp text-gray-400"></i> Social Sharing & Live Chat</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-magnifying-glass text-gray-400"></i> Schema Markup (SEO)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Timeline -->
+            <section id="timeline" class="mb-20 reveal">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span class="w-8 h-8 rounded bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-sm">05</span>
+                    Project Timeline (20 Days)
+                </h2>
+                
+                <div class="relative pl-8 space-y-8">
+                    <div class="timeline-line"></div>
+                    
+                    <div class="timeline-item relative">
+                        <span class="text-xs font-mono text-cyan-400 mb-1 block">DAYS 1-2</span>
+                        <h4 class="text-lg font-bold text-white">Discovery & Planning</h4>
+                        <p class="text-sm text-gray-400">Content outline, design wireframes, 3D model review.</p>
+                    </div>
+
+                    <div class="timeline-item relative">
+                        <span class="text-xs font-mono text-cyan-400 mb-1 block">DAYS 3-10</span>
+                        <h4 class="text-lg font-bold text-white">Design & Development</h4>
+                        <p class="text-sm text-gray-400">Homepage mockups, 3D logo integration, Payment setup, SEO implementation.</p>
+                    </div>
+
+                    <div class="timeline-item relative">
+                        <span class="text-xs font-mono text-cyan-400 mb-1 block">DAYS 11-14</span>
+                        <h4 class="text-lg font-bold text-white">Testing & Optimization</h4>
+                        <p class="text-sm text-gray-400">Load testing, mobile optimization, cross-browser checks.</p>
+                    </div>
+
+                    <div class="timeline-item relative">
+                        <span class="text-xs font-mono text-cyan-400 mb-1 block">DAYS 15-19</span>
+                        <h4 class="text-lg font-bold text-white">Revisions</h4>
+                        <p class="text-sm text-gray-400">Client feedback rounds (up to 3 rounds included).</p>
+                    </div>
+
+                    <div class="timeline-item relative">
+                        <span class="text-xs font-mono text-cyan-400 mb-1 block">DAY 20</span>
+                        <h4 class="text-lg font-bold text-white">Launch & Support</h4>
+                        <p class="text-sm text-gray-400">Live deployment, handover, start of 7-day post-launch support.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Investment -->
+            <section id="investment" class="mb-20 reveal">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span class="w-8 h-8 rounded bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-sm">06</span>
+                    Investment
+                </h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Base Package -->
+                    <div class="lg:col-span-2 glass-card rounded-2xl p-1 relative overflow-hidden group">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-blue-500"></div>
+                        <div class="p-8">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <h3 class="text-2xl font-bold brand-font text-white">Base Package</h3>
+                                    <p class="text-gray-400 text-sm mt-1">Complete Turnkey Solution</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-3xl font-bold text-cyan-400">₹1,00,000</div>
+                                    <div class="text-xs text-gray-500">One-time investment</div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                <ul class="space-y-3 text-sm text-gray-300">
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-cyan-500"></i> Full Website Development</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-cyan-500"></i> 3D Logo Logic Integration</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-cyan-500"></i> Payment Gateway Setup</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-cyan-500"></i> SEO & Schema Integration</li>
+                                </ul>
+                                <ul class="space-y-3 text-sm text-gray-300">
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-cyan-500"></i> 4 Custom Banners</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-cyan-500"></i> 3 Revision Rounds</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-cyan-500"></i> 7-Day Priority Support</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-cyan-500"></i> Admin Training Guides</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add-ons -->
+                    <div class="glass-card rounded-2xl p-8 bg-white/5">
+                        <h4 class="text-lg font-bold mb-4 text-white">Optional Add-ons</h4>
+                        <ul class="space-y-4 text-sm">
+                            <li class="flex justify-between items-center border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Custom 3D Model Creation</span>
+                                <span class="text-white">₹15k - 25k</span>
+                            </li>
+                            <li class="flex justify-between items-center border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Blog Writing (per article)</span>
+                                <span class="text-white">₹1,000</span>
+                            </li>
+                            <li class="flex justify-between items-center border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Extended Support (30 days)</span>
+                                <span class="text-white">₹15,000</span>
+                            </li>
+                            <li class="flex justify-between items-center border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Advanced Analytics Dash</span>
+                                <span class="text-white">₹8,000</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Terms & Footer -->
+            <section id="terms" class="mb-12 reveal">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span class="w-8 h-8 rounded bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-sm">07</span>
+                    Terms & Next Steps
+                </h2>
+                <div class="glass-card p-8 rounded-xl text-sm text-gray-400">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h4 class="text-white font-bold mb-2">Payment Terms</h4>
+                            <p class="mb-2">50% Advance to commence work.</p>
+                            <p>50% Balance upon live deployment.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold mb-2">Client Requirements</h4>
+                            <p>Client to provide product details, images, and glTF (3D) file for logo visualization.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-cyan-500/10 border border-cyan-500/30 p-6 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div>
+                            <h4 class="text-white font-bold text-lg">Ready to proceed?</h4>
+                            <p class="text-xs">This proposal is valid until December 24, 2025.</p>
+                        </div>
+                        <a href="mailto:your-email@example.com?subject=Accepting Proposal: Headphone Store" class="bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-3 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(0,242,234,0.5)] transform hover:scale-105">
+                            Accept Proposal
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="text-center border-t border-white/10 pt-8 pb-12 text-gray-500 text-sm">
+                <p class="mb-2">Document Prepared by [Your Name/Agency]</p>
+                <div class="flex justify-center gap-4 mb-4">
+                    <a href="#" class="hover:text-cyan-400"><i class="fa-solid fa-envelope"></i></a>
+                    <a href="#" class="hover:text-cyan-400"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="#" class="hover:text-cyan-400"><i class="fa-solid fa-globe"></i></a>
+                </div>
+                <p>&copy; 2025 All Rights Reserved.</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- Script for Interactivity -->
+    <script>
+        // Scroll Reveal Animation
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+
+        // Smooth Scroll for Navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Active Link Highlighting on Scroll
+        const sections = document.querySelectorAll("section");
+        const navLi = document.querySelectorAll("nav ul li a");
+        window.onscroll = () => {
+            reveal(); // Trigger reveal
+            
+            var current = "";
+            sections.forEach((section) => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute("id");
+                }
+            });
+
+            navLi.forEach((a) => {
+                a.classList.remove("active");
+                if (a.classList.contains(current)) {
+                    a.classList.add("active");
+                }
+                // Check href match because we added IDs to sections but href includes #
+                if (a.getAttribute('href').includes(current) && current !== "") {
+                     a.classList.add("active");
+                }
+            });
+        };
+    </script>
+</body>
+</html>
